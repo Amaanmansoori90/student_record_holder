@@ -3,7 +3,6 @@
 #include<fstream>
 #include<string>
 #include<cstring>
-
 using namespace std;
 struct StudentInfo {
     string firstname;
@@ -23,18 +22,29 @@ int takeInput()
     return takeinput;
 }
 
-void storedStudentRecord()
+void storedStudentRecord(bool isUpdating, int rollnum)
 {
+    system ("cls");
     StudentInfo si;
-    cout<<"Enter first name of a student";
+    cout<<"Enter first name of a student:";
     cin>>si.firstname;
-    cout<<"Enter last name of a student";
+    cout<<"\nEnter last name of a student:";
     cin>>si.lastname;
-    cout<<"Enter age of a student";
+    cout<<"\nEnter age of a student:";
     cin>>si.age;
-    cout<<"Enter roll number of a student";
-    cin>>si.rollnum;
+    if (!isUpdating)
+    {
+       cout<<"\nEnter roll number of a student:";
+       cin>>si.rollnum; 
+    }
+    else
+    {
+        si.rollnum=rollnum;
+    }
+    
+    cout<<"Record successfully Stored>>>";
     createDataStored (si);
+    mainScreen();
 }
 void createDataStored (StudentInfo si)
 {
@@ -60,7 +70,7 @@ void addStudent()
     switch (takeInput())
     {
         case 1:
-            storedStudentRecord();
+            storedStudentRecord(false, NULL);
             break;
 
         case 2:
@@ -72,13 +82,41 @@ void addStudent()
             break;
     }
 }
-void personalRecord(){
+int findFile(int rollnum)
+{
+    ifstream file;
+    string fileName= createFileName(rollnum);
+    cout<<"filename : "<<fileName;
+    file.open(fileName);
+    if(file)
+    {
+        cout<<"Student Record exist...!\n";
+        return 1;
+    }
+    else{
+        cout<<"student record does'nt exist...!\n";
+        return 0;
+    }
+}
+void personalRecord()
+{
+    int rollnum;
+    StudentInfo file;
+    cout<<"Enter existing student roll number:\n";
+    cin>>rollnum;
+    int fileExist = findFile(rollnum);
+    // file.open(fileExist);
+    storedStudentRecord(true,rollnum);
+}
+void marksRecord()
+{
+    int english=0,hindi=0,maths=0,gk=0,urdu=0;
     int rollnum;
     cout<<"Enter existing student roll number:\n";
     cin>>rollnum;
-    if(rollnum==rollnum){
-
-    }
+    int fileExist = findFile(rollnum);
+     cout<<"Enter 5 subject marks:\n";
+     cin>>english>>hindi>>maths>>gk>>urdu;
 }
 void updateRecord()
 {
@@ -90,11 +128,11 @@ void updateRecord()
     switch (takeInput())
     {
         case 1:
-            // personalRecord();
+            personalRecord();
             break;
 
         case 2:
-            // marksRecord();
+            marksRecord();
             break;
 
         case 3:
@@ -117,11 +155,17 @@ void deleteRecord()
             int rollnum;
             cout<<"Enter roll number of a student...!";
             cin>>rollnum;
-            deleteFile( rollnum);
-            break;
-        case 2:
-            mainScreen();
-            break ;
+            if(findFile(rollnum))
+            {
+                deleteFile(rollnum);
+                mainScreen();
+                break ;
+            }
+            else{
+               mainScreen();
+               break;
+            }
+            
 
         default:
             exit(0);
