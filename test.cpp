@@ -1,7 +1,9 @@
 #include<iostream>
 #include<conio.h>
 #include<fstream>
-#include <string>
+#include<string>
+#include<cstring>
+
 using namespace std;
 struct StudentInfo {
     string firstname;
@@ -10,6 +12,8 @@ struct StudentInfo {
     int rollnum;
 };
 void createDataStored (StudentInfo);
+string createFileName(int);
+void deleteFile(int);
 void mainScreen();
 int takeInput()
 {
@@ -29,33 +33,25 @@ void storedStudentRecord()
     cout<<"Enter age of a student";
     cin>>si.age;
     cout<<"Enter roll number of a student";
-    cin>>si.rollnum; 
-    // cout<<"\n"<<si.firstname; 
-    // cout<<"\n"<<si.lastname;
-    // cout<<"\n"<<si.age;
-    // cout<<"\n"<<si.rollnum; 
+    cin>>si.rollnum;
     createDataStored (si);
-
 }
 void createDataStored (StudentInfo si)
 {
-    cout<<"\n"<<si.firstname; 
-    cout<<"\n"<<si.lastname;
-    cout<<"\n"<<si.age;
-    cout<<"\n"<<si.rollnum;  
-    string fileName= to_string(si.rollnum) + ".txt";
+    string fileName= createFileName(si.rollnum);
     cout<<"filename : "<<fileName;
     ofstream MyFile(fileName);
 
-  // Write to the file
-  MyFile << si.rollnum <<endl;
-  MyFile << si.firstname<<endl;
-  MyFile << si.lastname<<endl;
-  MyFile << si.age<<endl;
+    // Write to the file
+    MyFile << si.rollnum <<endl;
+    MyFile << si.firstname<<endl;
+    MyFile << si.lastname<<endl;
+    MyFile << si.age<<endl;
 
-  // Close the file
-  MyFile.close();
+    // Close the file
+    MyFile.close();    
 }
+
 void addStudent()
 {
     system ("cls");
@@ -66,9 +62,22 @@ void addStudent()
         case 1:
             storedStudentRecord();
             break;
+
         case 2:
             mainScreen();
             break ;
+
+        default:
+            exit(0);
+            break;
+    }
+}
+void personalRecord(){
+    int rollnum;
+    cout<<"Enter existing student roll number:\n";
+    cin>>rollnum;
+    if(rollnum==rollnum){
+
     }
 }
 void updateRecord()
@@ -91,6 +100,10 @@ void updateRecord()
         case 3:
             mainScreen();
             break ;
+
+        default:
+            exit(0);
+            break;
     }
 }
 void deleteRecord()
@@ -98,6 +111,22 @@ void deleteRecord()
     system ("cls");
     cout<<"Press 1 for delete student record...!\n";
     cout<<"Press 2 for back to first screen!\n";
+    switch (takeInput())
+    {
+        case 1:
+            int rollnum;
+            cout<<"Enter roll number of a student...!";
+            cin>>rollnum;
+            deleteFile( rollnum);
+            break;
+        case 2:
+            mainScreen();
+            break ;
+
+        default:
+            exit(0);
+            break;
+    }
 }
 void mainScreen()
 {
@@ -121,12 +150,35 @@ void mainScreen()
             break;
 
         case 4:
+            system ("cls");
             exit(0);
             break;
 
            default:
             exit(0);
             break;
+    }
+}
+
+string createFileName(int rollnum){
+    string newFileName = to_string(rollnum) + ".txt";
+    return newFileName;
+}
+
+void deleteFile(int rollnum)
+{
+    string newFileName = createFileName(rollnum);
+    cout<<newFileName;
+    char *cstr = new char[newFileName.length()+1];
+    std::strcpy(cstr, newFileName.c_str());
+    cout<<"cstr :"<<cstr;
+    int status;
+    status = remove(cstr);
+    if(status==0){
+        cout<<"Deleted";
+    }
+    else{
+        cout<<"error";
     }
 }
 
