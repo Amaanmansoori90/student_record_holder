@@ -10,9 +10,20 @@ struct StudentInfo {
     int age;
     int rollnum;
 };
+struct StudentMarks {
+    int english;
+    int hindi;
+    int maths;
+    int gk;
+    int urdu;
+};
+void storedStudentMarks (int rollnum);
+void createMarksStored (StudentMarks , int);
 void createDataStored (StudentInfo);
 string createFileName(int);
+string createMarksFileName(int);
 void deleteFile(int);
+void deleteMarksFile (int);
 void mainScreen();
 int takeInput()
 {
@@ -21,7 +32,39 @@ int takeInput()
     cin>>takeinput;
     return takeinput;
 }
-
+void storedStudentMarks (int rollnum)
+{
+    system ("cls");
+    StudentMarks sm;
+    cout<<"Enter marks for english subject:";
+    cin>>sm.english;
+    cout<<"Enter marks for hindi subject:";
+    cin>>sm.hindi;
+    cout<<"Enter marks for maths subject:";
+    cin>>sm.maths;
+    cout<<"Enter marks for urdu subject:";
+    cin>>sm.urdu;
+    cout<<"Enter marks for gk subject:";
+    cin>>sm.gk;
+    cout<<"Record successfully Stored>>>";
+    createMarksStored (sm, rollnum);
+    mainScreen();
+}
+void recordStored()
+{
+    cout<<"Record Successfully stored...!";
+    cout<<"press 1 for back to the main screen...!";
+    switch (takeInput())
+    {
+    case 1:
+        mainScreen();
+        break;
+    
+    default:
+        exit(0);
+        break;
+    }
+}
 void storedStudentRecord(bool isUpdating, int rollnum)
 {
     system ("cls");
@@ -46,6 +89,23 @@ void storedStudentRecord(bool isUpdating, int rollnum)
     createDataStored (si);
     mainScreen();
 }
+void createMarksStored (StudentMarks sm, int rollnum)
+{
+    string fileName= createMarksFileName(rollnum);
+    cout<<"filename : "<<fileName;
+    ofstream MyFile(fileName);
+
+    // Write to the file
+    MyFile << sm.english <<endl;
+    MyFile << sm.hindi<<endl;
+    MyFile << sm.maths<<endl;
+    MyFile << sm.urdu<<endl;
+    MyFile << sm.gk<<endl;
+
+    // Close the file
+    MyFile.close();    
+}
+
 void createDataStored (StudentInfo si)
 {
     string fileName= createFileName(si.rollnum);
@@ -71,6 +131,7 @@ void addStudent()
     {
         case 1:
             storedStudentRecord(false, NULL);
+            recordStored();
             break;
 
         case 2:
@@ -110,13 +171,18 @@ void personalRecord()
 }
 void marksRecord()
 {
-    int english=0,hindi=0,maths=0,gk=0,urdu=0;
+    int english=0, hindi=0, maths=0, gk=0, urdu=0;
     int rollnum;
+    StudentMarks sm;
     cout<<"Enter existing student roll number:\n";
     cin>>rollnum;
     int fileExist = findFile(rollnum);
-     cout<<"Enter 5 subject marks:\n";
-     cin>>english>>hindi>>maths>>gk>>urdu;
+    storedStudentMarks (rollnum);
+    cout<<"\nEnglish ="<<english;
+    cout<<"\nHindi ="<<hindi;
+    cout<<"\nMaths ="<<maths;
+    cout<<"\ngk ="<<gk;
+    cout<<"\nurdu ="<<urdu;
 }
 void updateRecord()
 {
@@ -152,21 +218,61 @@ void deleteRecord()
     switch (takeInput())
     {
         case 1:
-            int rollnum;
+            int rollnum, ui;
+            cout<<"Which type of record do you want to delete ?\n";
+            cout<<"Press 1 for delete personal record...!\n";
+            cout<<"Press 2 for delete marks record...!\n";
+            ui = takeInput();
             cout<<"Enter roll number of a student...!";
             cin>>rollnum;
-            if(findFile(rollnum))
+            switch (ui)
             {
-                deleteFile(rollnum);
-                mainScreen();
-                break ;
-            }
-            else{
-               mainScreen();
-               break;
-            }
+                case 1:
+                //   cout<<"Enter roll number of a student...!";
+                //   cin>>rollnum;
+                  if(findFile(rollnum))
+                    {
+                        deleteFile(rollnum);
+                        deleteMarksFile(rollnum);
+                        mainScreen();
+                        break ;
+                    } 
+                  else
+                  {
+                    cout<<"File not found...\n";
+                  }
+                  
+                case 2:
+                    // cout<<"Enter roll number of a student...!";
+                    // cin>>rollnum;
+                    if(findFile(rollnum))
+                    {
+                        deleteMarksFile(rollnum);
+                        cout<<"Do you also want to delete personal record..?\n";
+                        cout<<"Press 1 for delete personal record..\n";
+                        cout<<"Press 2 for back to the main screen..\n";
+                        ui = takeInput();
+                        switch (ui)
+                        {
+                        case 1:
+                            deleteFile(rollnum);
+                            break;
+                        case 2:
+                            mainScreen();
+                            break;
+                        default:
+                            cout<<"please Enter a valid number..\n";
+                            break;
+                        }
+                    } 
+                default:
+                     cout<<"please Enter a valid number..\n";
+                break;
+            }    
+        case 2:
+            mainScreen();
+            break;
             
-
         default:
             exit(0);
             break;
@@ -203,7 +309,10 @@ void mainScreen()
             break;
     }
 }
-
+ string createMarksFileName(int rollnum){
+    string newFileName = to_string(rollnum) + "_marks.txt";
+    return newFileName;
+ }
 string createFileName(int rollnum){
     string newFileName = to_string(rollnum) + ".txt";
     return newFileName;
@@ -226,6 +335,22 @@ void deleteFile(int rollnum)
     }
 }
 
+void deleteMarksFile(int rollnum)
+{
+    string newFileName = createMarksFileName(rollnum);
+    cout<<newFileName;
+    char *cstr = new char[newFileName.length()+1];
+    std::strcpy(cstr, newFileName.c_str());
+    cout<<"cstr :"<<cstr;
+    int status;
+    status = remove(cstr);
+    if(status==0){
+        cout<<"Deleted";
+    }
+    else{
+        cout<<"error";
+    }
+}
 int main()
 {
     mainScreen();
